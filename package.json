@@ -10,5 +10,9 @@
     "final": "pnpm format && pnpm lint && pnpm typecheck",
     "db:push": "pnpm --filter @slab/api run db:push"
   },
-  "packageManager": "pnpm@10.26.0"
+  "packageManager": "pnpm@10.26.0",
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2"
+  }
 }

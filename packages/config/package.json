@@ -1,0 +1,11 @@
+{
+  "name": "@repo/config",
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.mjs",
+    "./tailwind.css": "./tailwind.css",
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/react.json": "./tsconfig/react.json",
+    "./tsconfig/node.json": "./tsconfig/node.json"
+  }
+}
