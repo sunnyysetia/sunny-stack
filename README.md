@@ -1,1 +1,1 @@
-# sunny-stack
+# Sunny Stack

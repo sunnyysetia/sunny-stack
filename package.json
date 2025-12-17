@@ -1,0 +1,14 @@
+{
+  "name": "sunny",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --recursive run build",
+    "dev": "pnpm --recursive --parallel run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx}\"",
+    "typecheck": "pnpm --recursive run typecheck",
+    "lint": "pnpm --recursive run lint",
+    "final": "pnpm format && pnpm lint && pnpm typecheck",
+    "db:push": "pnpm --filter @slab/api run db:push"
+  },
+  "packageManager": "pnpm@10.26.0"
+}

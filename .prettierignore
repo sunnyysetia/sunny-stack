@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+.next/
+.turbo/
+out/
+
+# Misc
+coverage/
+.DS_Store
+*.log
+
