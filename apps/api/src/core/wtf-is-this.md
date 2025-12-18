@@ -1,1 +1,1 @@
-Core module encompasses thigns that are used by many other modules, e.g. sotrage, db, email
+Core module encompasses thigns that are used by many other modules, e.g. storage, db, email

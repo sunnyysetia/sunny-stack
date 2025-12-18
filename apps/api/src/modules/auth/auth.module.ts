@@ -10,6 +10,7 @@ import { type Database, DB_CONNECTION } from '@/core/database';
 import { AuthController } from './auth.controller';
 import { createBetterAuthConfig } from './better-auth/config';
 import { BETTER_AUTH } from './better-auth/constants';
+import { AuthSessionService } from './auth-session.service';
 
 @Module({
   providers: [
@@ -31,8 +32,9 @@ import { BETTER_AUTH } from './better-auth/constants';
       },
       inject: [DB_CONNECTION, ConfigService],
     },
+    AuthSessionService,
   ],
-  exports: [BETTER_AUTH],
+  exports: [BETTER_AUTH, AuthSessionService],
   controllers: [AuthController],
 })
 export class AuthModule implements OnModuleInit {
