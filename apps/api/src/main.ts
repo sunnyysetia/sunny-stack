@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 // import { generateOpenApiSpecs } from './common/utils/openapi';
 import corsConfig from './config/cors.config';
-import { TrpcContextFactory } from './trpc/trpc-context.factory';
+import { TrpcContextFactory } from './trpc/context.factory';
 import { appRouter } from './trpc/app.router';
 import * as trpcExpress from '@trpc/server/adapters/express';
 

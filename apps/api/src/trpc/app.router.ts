@@ -1,9 +1,9 @@
-import { router } from '@/trpc/trpc';
+import { router } from './trpc';
 import { booksRouter } from '@/modules/books/trpc/books.router';
 
 export const appRouter = router({
   books: booksRouter,
-  //   users: usersRouter,
+  // users: usersRouter,
 });
 
 export type AppRouter = typeof appRouter;
