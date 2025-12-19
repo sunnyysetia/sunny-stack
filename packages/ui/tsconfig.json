@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/config/tsconfig/react-lib.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "/tmp/ui-tsbuildinfo",
+    "paths": {
+      "@repo/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

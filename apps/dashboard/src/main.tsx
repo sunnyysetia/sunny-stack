@@ -1,22 +1,23 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
 
+import { queryClient } from '@/api/tanstack-query';
+import { trpcClient } from '@/api/trpc';
+
+import reportWebVitals from './report-web-vitals.ts';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
-import './styles/tailwind.css';
-import reportWebVitals from './reportWebVitals.ts';
-import { queryClient } from '@/api/tanstack-query';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { trpc } from '@/api/trpc';
+import './styles/index.css';
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
   context: {
     queryClient,
-    trpc,
+    trpcClient,
   },
   defaultPreload: 'intent',
   scrollRestoration: true,

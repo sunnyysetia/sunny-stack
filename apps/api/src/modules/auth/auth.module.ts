@@ -7,9 +7,9 @@ import cors, { type CorsOptions } from 'cors';
 import corsConfig from '@/config/cors.config';
 import { type Database, DB_CONNECTION } from '@/core/database';
 
-import { AuthController } from './auth.controller';
 import { createBetterAuthConfig } from './better-auth/config';
 import { BETTER_AUTH } from './better-auth/constants';
+import { AuthController } from './auth.controller';
 import { AuthSessionService } from './auth-session.service';
 
 @Module({

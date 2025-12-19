@@ -1,0 +1,14 @@
+{
+  "name": "@repo/config",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/node.json": "./tsconfig/node.json",
+    "./tsconfig/nestjs.json": "./tsconfig/nestjs.json",
+    "./tsconfig/vite-react.json": "./tsconfig/vite-react.json",
+    "./tsconfig/node-lib.json": "./tsconfig/node-lib.json",
+    "./tsconfig/react-lib.json": "./tsconfig/react-lib.json"
+  }
+}

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { Request } from 'express';
 import type { Auth } from 'better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
+import type { Request } from 'express';
 
 import { BETTER_AUTH } from '@/modules/auth/better-auth/constants';
 

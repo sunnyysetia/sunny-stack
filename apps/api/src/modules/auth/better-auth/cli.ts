@@ -9,6 +9,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
 import * as schema from '../../../core/database/schema';
+
 import { createBetterAuthConfig } from './config';
 
 const db = drizzle({
