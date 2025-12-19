@@ -23,7 +23,7 @@ export function useSignIn() {
     }
 
     // Refresh cached session, then re-run route guards/loaders that depend on it
-    await queryClient.invalidateQueries({ queryKey: sessionQueryOptions.queryKey });
+    await queryClient.refetchQueries({ queryKey: sessionQueryOptions.queryKey });
     await router.invalidate();
 
     return result;

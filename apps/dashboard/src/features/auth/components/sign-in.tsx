@@ -30,21 +30,16 @@ const SignIn = () => {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    try {
-      const result = await signIn(data);
-      if (!result) {
-        return;
-      }
-
-      toast.success('Signed in');
-      await navigate({ to: redirect || '/' });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign in failed';
-      toast.error(message);
-
-      // Optional: set a form-level error
-      form.setError('password', { type: 'server', message });
+    const result = await signIn(data);
+    if (!result) {
+      const errorMessage = 'Invalid email or password';
+      form.setError('email', { type: 'server', message: errorMessage });
+      form.setError('password', { type: 'server', message: errorMessage });
+      return;
     }
+
+    toast.success('Signed in');
+    await navigate({ to: redirect || '/' });
   };
 
   return (
