@@ -8,10 +8,13 @@ export const Route = createFileRoute('/_protected/')({
 });
 
 function RouteComponent() {
+  const { session } = Route.useRouteContext(); // Available because of layout route
   const signOut = useSignOut();
   return (
     <div>
-      Hello "/_protected/"!
+      userId: {session.user.id}
+      <br />
+      sessionId: {session.session.id}
       <br />
       <Button
         onClick={async () => {
