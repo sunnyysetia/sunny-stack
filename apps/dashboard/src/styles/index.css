@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@import '@repo/ui/styles/global.css';
+
+/* Ensure Tailwind sees classes used inside the ui package */
+@source '../../../../packages/ui/src';
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+/* Don't let body scroll */
+body {
+  overflow: hidden;
+  overscroll-behavior: none; /* Prevent pull-to-refresh (optional but OK for dashboards) */
+}
+
+/* Box model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Smooth anchors */
+html {
+  scroll-behavior: smooth;
+}

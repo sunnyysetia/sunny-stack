@@ -1,0 +1,8 @@
+{
+  "extends": "./node.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": true
+  }
+}

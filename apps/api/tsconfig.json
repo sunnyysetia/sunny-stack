@@ -1,0 +1,17 @@
+{
+  "extends": "@repo/config/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  },
+  "include": ["src/**/*", "scripts/**/*", "test/**/*", "drizzle.config.ts"],
+  "files": ["src/common/types/axios.d.ts"]
+}
