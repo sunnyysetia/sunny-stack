@@ -11,7 +11,7 @@
     "fin": "pnpm format && pnpm lint:fix && pnpm typecheck",
     "db:push": "pnpm --filter @repo/api run db:push"
   },
-  "packageManager": "pnpm@10.26.0",
+  "packageManager": "pnpm@10.27.0",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@tanstack/eslint-config": "^0.3.4",

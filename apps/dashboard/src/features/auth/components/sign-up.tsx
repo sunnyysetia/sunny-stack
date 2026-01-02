@@ -42,19 +42,17 @@ const SignUp = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    try {
-      const result = await signUp({ name: data.name, email: data.email, password: data.password });
-      if (!result) {
-        return;
-      }
-
-      toast.success('Account created');
-      await navigate({ to: redirect || '/' });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign up failed';
-      toast.error(message);
-      form.setError('password', { type: 'server', message });
+    const result = await signUp({ name: data.name, email: data.email, password: data.password });
+    if (!result) {
+      const errorMessage = 'Account creation failed';
+      form.setError('name', { type: 'server', message: errorMessage });
+      form.setError('email', { type: 'server', message: errorMessage });
+      form.setError('password', { type: 'server', message: errorMessage });
+      return;
     }
+
+    toast.success('Account created');
+    await navigate({ to: redirect || '/' });
   };
 
   return (
