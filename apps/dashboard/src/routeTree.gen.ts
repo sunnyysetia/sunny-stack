@@ -8,69 +8,69 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
-import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
-import { Route as ProtectedBooksRouteImport } from './routes/_protected/books'
-import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
-import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route';
+import { Route as AuthRouteRouteImport } from './routes/_auth/route';
+import { Route as ProtectedIndexRouteImport } from './routes/_protected/index';
+import { Route as ProtectedBooksRouteImport } from './routes/_protected/books';
+import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up';
+import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in';
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ProtectedRouteRoute,
-} as any)
+} as any);
 const ProtectedBooksRoute = ProtectedBooksRouteImport.update({
   id: '/books',
   path: '/books',
   getParentRoute: () => ProtectedRouteRoute,
-} as any)
+} as any);
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
   getParentRoute: () => AuthRouteRoute,
-} as any)
+} as any);
 const AuthSignInRoute = AuthSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => AuthRouteRoute,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/sign-in': typeof AuthSignInRoute
-  '/sign-up': typeof AuthSignUpRoute
-  '/books': typeof ProtectedBooksRoute
-  '/': typeof ProtectedIndexRoute
+  '/sign-in': typeof AuthSignInRoute;
+  '/sign-up': typeof AuthSignUpRoute;
+  '/books': typeof ProtectedBooksRoute;
+  '/': typeof ProtectedIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/sign-in': typeof AuthSignInRoute
-  '/sign-up': typeof AuthSignUpRoute
-  '/books': typeof ProtectedBooksRoute
-  '/': typeof ProtectedIndexRoute
+  '/sign-in': typeof AuthSignInRoute;
+  '/sign-up': typeof AuthSignUpRoute;
+  '/books': typeof ProtectedBooksRoute;
+  '/': typeof ProtectedIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/_auth': typeof AuthRouteRouteWithChildren
-  '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/_auth/sign-in': typeof AuthSignInRoute
-  '/_auth/sign-up': typeof AuthSignUpRoute
-  '/_protected/books': typeof ProtectedBooksRoute
-  '/_protected/': typeof ProtectedIndexRoute
+  __root__: typeof rootRouteImport;
+  '/_auth': typeof AuthRouteRouteWithChildren;
+  '/_protected': typeof ProtectedRouteRouteWithChildren;
+  '/_auth/sign-in': typeof AuthSignInRoute;
+  '/_auth/sign-up': typeof AuthSignUpRoute;
+  '/_protected/books': typeof ProtectedBooksRoute;
+  '/_protected/': typeof ProtectedIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/sign-in' | '/sign-up' | '/books' | '/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-up' | '/books' | '/'
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: '/sign-in' | '/sign-up' | '/books' | '/';
+  fileRoutesByTo: FileRoutesByTo;
+  to: '/sign-in' | '/sign-up' | '/books' | '/';
   id:
     | '__root__'
     | '/_auth'
@@ -78,93 +78,91 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_protected/books'
-    | '/_protected/'
-  fileRoutesById: FileRoutesById
+    | '/_protected/';
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/_protected': {
-      id: '/_protected'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof ProtectedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_protected';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof ProtectedRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_auth';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof AuthRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_protected/': {
-      id: '/_protected/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof ProtectedIndexRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
+      id: '/_protected/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof ProtectedIndexRouteImport;
+      parentRoute: typeof ProtectedRouteRoute;
+    };
     '/_protected/books': {
-      id: '/_protected/books'
-      path: '/books'
-      fullPath: '/books'
-      preLoaderRoute: typeof ProtectedBooksRouteImport
-      parentRoute: typeof ProtectedRouteRoute
-    }
+      id: '/_protected/books';
+      path: '/books';
+      fullPath: '/books';
+      preLoaderRoute: typeof ProtectedBooksRouteImport;
+      parentRoute: typeof ProtectedRouteRoute;
+    };
     '/_auth/sign-up': {
-      id: '/_auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
+      id: '/_auth/sign-up';
+      path: '/sign-up';
+      fullPath: '/sign-up';
+      preLoaderRoute: typeof AuthSignUpRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
     '/_auth/sign-in': {
-      id: '/_auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof AuthSignInRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
+      id: '/_auth/sign-in';
+      path: '/sign-in';
+      fullPath: '/sign-in';
+      preLoaderRoute: typeof AuthSignInRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
   }
 }
 
 interface AuthRouteRouteChildren {
-  AuthSignInRoute: typeof AuthSignInRoute
-  AuthSignUpRoute: typeof AuthSignUpRoute
+  AuthSignInRoute: typeof AuthSignInRoute;
+  AuthSignUpRoute: typeof AuthSignUpRoute;
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
-}
+};
 
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(AuthRouteRouteChildren);
 
 interface ProtectedRouteRouteChildren {
-  ProtectedBooksRoute: typeof ProtectedBooksRoute
-  ProtectedIndexRoute: typeof ProtectedIndexRoute
+  ProtectedBooksRoute: typeof ProtectedBooksRoute;
+  ProtectedIndexRoute: typeof ProtectedIndexRoute;
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedBooksRoute: ProtectedBooksRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
-}
+};
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
