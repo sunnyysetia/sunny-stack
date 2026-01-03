@@ -19,6 +19,10 @@ async function bootstrap() {
     trpcExpress.createExpressMiddleware({
       router: appRouter,
       createContext: ({ req }) => ctxFactory.create(req),
+      onError: ({ error }) => {
+        console.error('TRPC error:', error);
+        //  Can add logging here to send to Sentry or other error tracking service
+      },
     }),
   );
 

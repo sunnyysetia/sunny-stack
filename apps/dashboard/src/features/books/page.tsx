@@ -5,7 +5,7 @@ import { BookCard } from './components/book-card';
 import type { Book } from './types';
 
 const BooksPage = () => {
-  const { data: books } = useQuery(booksQueryOptions);
+  const { data: books } = useQuery(booksQueryOptions());
   return (
     <div>
       {books?.map((book: Book) => (

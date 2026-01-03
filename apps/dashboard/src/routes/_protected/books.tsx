@@ -6,7 +6,7 @@ import BooksPage from '@/features/books/page';
 export const Route = createFileRoute('/_protected/books')({
   component: RouteComponent,
   beforeLoad: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData(booksQueryOptions);
+    await queryClient.ensureQueryData(booksQueryOptions());
   },
 });
 
