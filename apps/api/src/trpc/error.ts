@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 
-export type AppErrorCode = 'PROJECT_NAME_TAKEN' | 'ORG_REQUIRED' | 'PAYWALLED' | 'RATE_LIMITED';
+export type AppErrorCode = 'BOOK_TITLE_TAKEN' | 'ORG_REQUIRED' | 'PAYWALLED' | 'RATE_LIMITED';
 
 export class AppError extends Error {
   constructor(

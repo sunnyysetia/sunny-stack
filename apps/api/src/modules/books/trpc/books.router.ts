@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { book } from '@/core/database/schema/book';
+import { book, isDbError } from '@/core/database';
+import { throwAppError } from '@/trpc/error';
 import { protectedProcedure, publicProcedure, router } from '@/trpc/trpc';
 
 export const booksRouter = router({
@@ -16,11 +17,23 @@ export const booksRouter = router({
   create: protectedProcedure
     .input(z.object({ title: z.string().min(1), publishedAt: z.coerce.date() }))
     .mutation(async ({ ctx, input }) => {
-      const [newBook] = await ctx.db
-        .insert(book)
-        .values({ title: input.title, publishedAt: input.publishedAt })
-        .returning();
+      try {
+        const [newBook] = await ctx.db
+          .insert(book)
+          .values({ title: input.title, publishedAt: input.publishedAt })
+          .returning();
 
-      return newBook;
+        return newBook;
+      } catch (error) {
+        if (isDbError(error, 'UNIQUE_CONSTRAINT')) {
+          throwAppError({
+            trpcCode: 'BAD_REQUEST',
+            appCode: 'BOOK_TITLE_TAKEN',
+            message: 'Book title already taken',
+            field: 'title',
+          });
+        }
+        throw error;
+      }
     }),
 });
