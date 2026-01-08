@@ -7,6 +7,7 @@ NestJS (Backend)
 - I like how opinionated it is - it forces you into a clean, modular structure, which many pure express apps lack. Under the hood it’s still just Express, so it’s easy to jump in and tweak stuff when you need to. It also seems to be quite popular in enterprise, has been battle tested with more than a decade of use, and has a great evosystem around it.
 
 - One of the big wins of a TypeScript monorepo is end to end type safety between frontend and backend via shared types. I used to stitch together a few tools to get close to this (nestjs-zod, OpenAPI generation, Orval client, etc) and honestly it started to feel like tRPC with extra steps. tRPC in nest is not traditional, but I've tapped into the express primitives to make it work in a way where you can still inject nestjs services into it, and it makes for quite a beautiful type safe dev experience. Very happy so far.
+  -  _Also, why not just go “pure tRPC” and skip Nest?_ Mostly because I like how Nest forces structure. The module + DI stuff makes it way easier to keep things clean as the app grows (proper S3/email/billing services etc), and I can inject all of that into my tRPC context anyway. Then I use Nest’s normal module/controller setup for public REST endpoints (webhooks, auth callbacks, external integrations), while tRPC is mainly for frontend app calls. Best of both worlds IMO.
 
 Drizzle (ORM)
 
