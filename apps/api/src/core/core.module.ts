@@ -1,11 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 
+import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 
 @Global()
 @Module({
-  imports: [DatabaseModule],
+  imports: [AuthModule, DatabaseModule],
   providers: [],
-  exports: [DatabaseModule],
+  exports: [AuthModule, DatabaseModule],
 })
 export class CoreModule {}

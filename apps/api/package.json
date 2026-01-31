@@ -17,7 +17,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "auth:generate": "pnpx @better-auth/cli generate --config ./src/modules/auth/better-auth/cli.ts --output ./src/core/database/schema/better-auth.ts --yes",
+    "auth:generate": "pnpx @better-auth/cli generate --config ./src/core/auth/better-auth/cli.ts --output ./src/core/database/schema/better-auth.ts --yes",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push --verbose",
