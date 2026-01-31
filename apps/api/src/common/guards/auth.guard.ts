@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import type { Session, User } from 'better-auth';
 import type { Request } from 'express';
 
-import { type Auth, BETTER_AUTH } from '@/modules/auth/better-auth';
+import { type Auth, BETTER_AUTH } from '@/core/auth/better-auth';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 

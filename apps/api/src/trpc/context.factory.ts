@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { Session, User } from 'better-auth';
 import type { Request } from 'express';
 
+import { AuthSessionService } from '@/core/auth/auth-session.service';
 import type { Database } from '@/core/database';
 import { DB_CONNECTION } from '@/core/database/database.constants';
-import { AuthSessionService } from '@/modules/auth/auth-session.service';
 
 export type TrpcContext = {
   db: Database;

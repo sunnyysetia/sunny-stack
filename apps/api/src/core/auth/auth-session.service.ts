@@ -3,7 +3,7 @@ import type { Auth } from 'better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
 import type { Request } from 'express';
 
-import { BETTER_AUTH } from '@/modules/auth/better-auth/constants';
+import { BETTER_AUTH } from './better-auth/constants';
 
 @Injectable()
 export class AuthSessionService {
