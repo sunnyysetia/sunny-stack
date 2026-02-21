@@ -1,11 +1,13 @@
-import { pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, unique } from 'drizzle-orm/pg-core';
 
-export const book = pgTable(
+import { createdAt, randomPrimaryUUID } from '../utils';
+
+export const bookTable = pgTable(
   'book',
   {
-    id: uuid().primaryKey().defaultRandom(),
+    id: randomPrimaryUUID,
     title: text().notNull(),
-    publishedAt: timestamp({ withTimezone: true }).notNull(),
+    publishedAt: createdAt,
   },
   (t) => [unique().on(t.title)],
 );
