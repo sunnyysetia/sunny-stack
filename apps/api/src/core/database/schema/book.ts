@@ -5,9 +5,9 @@ import { createdAt, randomPrimaryUUID } from '../utils';
 export const bookTable = pgTable(
   'book',
   {
-    id: randomPrimaryUUID,
+    id: randomPrimaryUUID(),
     title: text().notNull(),
-    publishedAt: createdAt,
+    publishedAt: createdAt(),
   },
   (t) => [unique().on(t.title)],
 );
