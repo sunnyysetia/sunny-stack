@@ -1,10 +1,9 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 export const trustedOrigins = [
-  '*',
   'https://dashboard.withslab.com',
   'https://withslab.com',
-  'http://localhost:3000',
+  ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : []),
 ];
 
 export const corsConfig: CorsOptions = {

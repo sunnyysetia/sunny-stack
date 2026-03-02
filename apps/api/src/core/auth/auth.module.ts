@@ -2,9 +2,7 @@ import { Inject, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { Auth } from 'better-auth';
-import cors, { type CorsOptions } from 'cors';
 
-import corsConfig from '@/config/cors.config';
 import { type Database, DB_CONNECTION } from '@/core/database';
 
 import { createBetterAuthConfig } from './better-auth/config';
@@ -45,9 +43,6 @@ export class AuthModule implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // Apply BetterAuth-required CORS
-    this.adapter.httpAdapter.use(cors(corsConfig as CorsOptions));
-
     // Mount BetterAuth routes
     const basePath = this.configService.getOrThrow<string>('BETTER_AUTH_BASE_PATH');
 
