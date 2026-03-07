@@ -62,7 +62,9 @@ export default defineConfig([
       '**/build/**',
       '**/.turbo/**',
       '**/.vite/**',
+      '**/.next/**',
       '**/coverage/**',
+      '**/.venv/**',
 
       // Generated route tree is allowed
       'apps/dashboard/src/**/routeTree.gen.ts',
@@ -151,10 +153,11 @@ export default defineConfig([
     files: ['apps/dashboard/**/*.{ts,tsx}'],
   })),
 
-  // 8.1) Dashboard: allow Promise-returning handlers in JSX attributes (react-hook-form handleSubmit etc)
+  // 8.1) Dashboard: override TanStack's array-type rule and allow Promise-returning handlers
   {
     files: ['apps/dashboard/**/*.{ts,tsx}'],
     rules: {
+      '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/no-misused-promises': [
         'error',
         {
