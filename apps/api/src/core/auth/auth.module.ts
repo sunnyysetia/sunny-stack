@@ -1,53 +1,67 @@
 import { Inject, Module, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost } from '@nestjs/core';
-import type { Auth } from 'better-auth';
 
+import { env } from '@/config/env';
 import { type Database, DB_CONNECTION } from '@/core/database';
+import { PlatformMailModule } from '@/core/platform-mail/platform-mail.module';
+import { PlatformMailService } from '@/core/platform-mail/platform-mail.service';
 
 import { createBetterAuthConfig } from './better-auth/config';
-import { BETTER_AUTH } from './better-auth/constants';
-import { AuthController } from './auth.controller';
+import {
+  INTERNAL_AUTH_STRATEGY,
+  USER_AUTH_STRATEGY,
+} from './guards/strategies/auth-strategy.interface';
+import { InternalAuthStrategy } from './guards/strategies/internal-auth.strategy';
+import { UserAuthStrategy } from './guards/strategies/user-auth.strategy';
 import { AuthSessionService } from './auth-session.service';
+import { type AppAuth, BETTER_AUTH, BETTER_AUTH_BASE_PATH } from './better-auth';
 
 @Module({
+  imports: [PlatformMailModule],
   providers: [
     {
       provide: BETTER_AUTH,
-      useFactory: async (db: Database, config: ConfigService) => {
+      useFactory: async (db: Database, mailer: PlatformMailService): Promise<AppAuth> => {
         const { betterAuth } = await import('better-auth');
-
         const { drizzleAdapter } = await import('better-auth/adapters/drizzle');
 
         return betterAuth({
           database: drizzleAdapter(db, { provider: 'pg' }),
-          ...createBetterAuthConfig({
-            secret: config.getOrThrow('BETTER_AUTH_SECRET'),
-            baseURL: config.getOrThrow('SELF_BASE_URL'),
-            basePath: config.getOrThrow('BETTER_AUTH_BASE_PATH'),
-          }),
+          ...(await createBetterAuthConfig(
+            {
+              secret: env.BETTER_AUTH_SECRET,
+              baseURL: env.SELF_BASE_URL,
+              basePath: BETTER_AUTH_BASE_PATH,
+            },
+            {
+              isCliMode: false,
+              mailer,
+              dashboardUrl: env.DASHBOARD_URL,
+              isDev: env.NODE_ENV !== 'production',
+            },
+          )),
         });
       },
-      inject: [DB_CONNECTION, ConfigService],
+      inject: [DB_CONNECTION, PlatformMailService],
     },
     AuthSessionService,
+    { provide: INTERNAL_AUTH_STRATEGY, useClass: InternalAuthStrategy },
+    { provide: USER_AUTH_STRATEGY, useClass: UserAuthStrategy },
   ],
-  exports: [BETTER_AUTH, AuthSessionService],
-  controllers: [AuthController],
+  exports: [BETTER_AUTH, AuthSessionService, INTERNAL_AUTH_STRATEGY, USER_AUTH_STRATEGY],
 })
 export class AuthModule implements OnModuleInit {
   constructor(
     private readonly adapter: HttpAdapterHost,
-    private readonly configService: ConfigService,
-    @Inject(BETTER_AUTH) private readonly betterAuth: Auth,
+    @Inject(BETTER_AUTH) private readonly betterAuth: AppAuth,
   ) {}
 
   async onModuleInit() {
-    // Mount BetterAuth routes
-    const basePath = this.configService.getOrThrow<string>('BETTER_AUTH_BASE_PATH');
-
+    // Skip route mounting when running outside the HTTP-server context — e.g.
+    // standalone scripts booted via NestFactory.createApplicationContext.
+    // `httpAdapter` is only present when created via NestFactory.create.
+    if (!this.adapter.httpAdapter) return;
     const { toNodeHandler } = await import('better-auth/node');
-
-    this.adapter.httpAdapter.all(`${basePath}/*splat`, toNodeHandler(this.betterAuth));
+    this.adapter.httpAdapter.all(`${BETTER_AUTH_BASE_PATH}/*splat`, toNodeHandler(this.betterAuth));
   }
 }

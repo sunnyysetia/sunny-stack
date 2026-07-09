@@ -10,7 +10,7 @@ const PG_ERROR_CODE = {
 export function isDbError(
   err: unknown,
   kind: keyof typeof PG_ERROR_CODE,
-  //   opts?: { constraint?: string },
+  opts?: { constraint?: string },
 ): boolean {
   if (!err || typeof err !== 'object') return false;
 
@@ -25,10 +25,12 @@ export function isDbError(
 
   if (code !== PG_ERROR_CODE[kind]) return false;
 
-  // Optional: only if you want to target a specific unique constraint.
-  //   if (opts?.constraint) {
-  //     return e.cause?.constraint === opts.constraint;
-  //   }
+  // Optionally target a specific named constraint — needed when one statement
+  // can trip more than one unique index and each maps to a different typed
+  // error.
+  if (opts?.constraint) {
+    return e.cause?.constraint === opts.constraint;
+  }
 
   return true;
 }

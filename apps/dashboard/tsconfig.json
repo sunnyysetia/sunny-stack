@@ -3,7 +3,6 @@
   "references": [{ "path": "../api" }],
   "compilerOptions": {
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

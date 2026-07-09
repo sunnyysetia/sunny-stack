@@ -1,3 +1,23 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# pnpm 10 requires build scripts to be explicitly approved. Only list deps this
+# workspace actually installs and trusts to run install-time build scripts.
+allowBuilds:
+  "@nestjs/core": true
+  "@swc/core": true
+  core-js: true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+overrides:
+  express: ^5.2.1
+  "@types/express": ^5.0.6
+  react: 19.2.7
+  react-dom: 19.2.7
+
+peerDependencyRules:
+  ignoreMissing:
+    - hono

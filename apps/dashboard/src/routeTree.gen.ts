@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
+import { Route as ProtectedVinylsRouteImport } from './routes/_protected/vinyls'
 import { Route as ProtectedBooksRouteImport } from './routes/_protected/books'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
@@ -27,6 +28,11 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedVinylsRoute = ProtectedVinylsRouteImport.update({
+  id: '/vinyls',
+  path: '/vinyls',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedBooksRoute = ProtectedBooksRouteImport.update({
@@ -46,16 +52,18 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof ProtectedIndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/books': typeof ProtectedBooksRoute
-  '/': typeof ProtectedIndexRoute
+  '/vinyls': typeof ProtectedVinylsRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof ProtectedIndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/books': typeof ProtectedBooksRoute
-  '/': typeof ProtectedIndexRoute
+  '/vinyls': typeof ProtectedVinylsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -64,13 +72,14 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_protected/books': typeof ProtectedBooksRoute
+  '/_protected/vinyls': typeof ProtectedVinylsRoute
   '/_protected/': typeof ProtectedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/sign-in' | '/sign-up' | '/books' | '/'
+  fullPaths: '/' | '/sign-in' | '/sign-up' | '/books' | '/vinyls'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/sign-up' | '/books' | '/'
+  to: '/' | '/sign-in' | '/sign-up' | '/books' | '/vinyls'
   id:
     | '__root__'
     | '/_auth'
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_protected/books'
+    | '/_protected/vinyls'
     | '/_protected/'
   fileRoutesById: FileRoutesById
 }
@@ -91,14 +101,14 @@ declare module '@tanstack/react-router' {
     '/_protected': {
       id: '/_protected'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof ProtectedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
       id: '/_auth'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -107,6 +117,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof ProtectedIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/vinyls': {
+      id: '/_protected/vinyls'
+      path: '/vinyls'
+      fullPath: '/vinyls'
+      preLoaderRoute: typeof ProtectedVinylsRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/books': {
@@ -149,11 +166,13 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface ProtectedRouteRouteChildren {
   ProtectedBooksRoute: typeof ProtectedBooksRoute
+  ProtectedVinylsRoute: typeof ProtectedVinylsRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedBooksRoute: ProtectedBooksRoute,
+  ProtectedVinylsRoute: ProtectedVinylsRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
 }
 

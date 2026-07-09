@@ -8,10 +8,15 @@ node_modules
 
 # Local env files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+
+# Local research / scratch (real PII, never commit)
+.research/
+
+# Local DB dumps (real PII, never commit)
+.backups/
+db-backups/
 
 # Testing
 coverage
@@ -37,3 +42,53 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Editor/IDE
+.idea
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS
+Thumbs.db
+ehthumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Caches
+.cache
+.eslintcache
+.npm
+
+# Packages
+*.tgz
+
+# Logs
+.pnpm-debug.log*
+logs
+
+# Claude Code
+.claude/settings.local.json
+.claude/worktrees/
+
+# Codex
+.codex/config.local.toml
+
+# Gemini CLI
+.gemini/history/
+.gemini/tmp/
+.gemini/google_accounts.json
+.gemini/installation_id
+.gemini/oauth_creds.json
+
+# Cursor
+.cursor/chat/
+.cursor/rules/*.local.mdc
+
+# HAR captures — contain auth cookies/tokens, never commit
+*.har
+
+# TanStack Router cache
+.tanstack/

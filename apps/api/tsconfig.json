@@ -2,9 +2,9 @@
   "extends": "@repo/config/tsconfig/nestjs.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./",
+    "rootDir": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
     "strictNullChecks": true,
@@ -12,6 +12,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*", "scripts/**/*", "test/**/*", "drizzle.config.ts"],
-  "files": ["src/common/types/axios.d.ts"]
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "drizzle.config.ts",
+    "vitest.config.ts",
+    "vitest.shared.ts"
+  ]
 }

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { type Database, DB_CONNECTION } from '@/core/database/database.constants';
+import { type Database, DB_CONNECTION } from '@/core/database';
 import { bookTable } from '@/core/database/schema';
 
 @Injectable()

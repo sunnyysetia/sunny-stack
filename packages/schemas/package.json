@@ -1,0 +1,30 @@
+{
+  "name": "@repo/schemas",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.13.8"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "zod": ">=3.25.0"
+  }
+}

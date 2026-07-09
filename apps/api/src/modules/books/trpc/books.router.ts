@@ -1,3 +1,4 @@
+import { exampleStatusSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { bookTable, isDbError } from '@/core/database';
@@ -15,12 +16,20 @@ export const booksRouter = router({
     return ctx.db.select().from(bookTable);
   }),
   create: protectedProcedure
-    .input(z.object({ title: z.string().min(1), publishedAt: z.coerce.date() }))
+    // `status` reuses the SAME `@repo/schemas` source that defines the pg enum,
+    // so the API's input validation and the DB constraint stay in lockstep.
+    .input(
+      z.object({
+        title: z.string().min(1),
+        publishedAt: z.coerce.date(),
+        status: exampleStatusSchema.optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         const [newBook] = await ctx.db
           .insert(bookTable)
-          .values({ title: input.title, publishedAt: input.publishedAt })
+          .values({ title: input.title, status: input.status, publishedAt: input.publishedAt })
           .returning();
 
         return newBook;

@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { sessionQueryOptions } from '@/features/auth/api/queries';
+import { normalizeRedirectTarget } from '@/features/auth/lib/redirect';
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
@@ -11,7 +12,10 @@ export const Route = createFileRoute('/_auth')({
   beforeLoad: async ({ context: { queryClient }, search }) => {
     const session = await queryClient.ensureQueryData(sessionQueryOptions);
     if (session) {
-      throw redirect({ to: search.redirect || '/' });
+      // `href` (not `to`): the target can carry a query string/hash, which
+      // TanStack won't parse out of a `to` pathname template. Sanitised so a
+      // crafted `?redirect=` can't become an open redirect.
+      throw redirect({ href: normalizeRedirectTarget(search.redirect) });
     }
   },
 });

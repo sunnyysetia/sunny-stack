@@ -4,8 +4,6 @@ import { toast } from 'sonner';
 
 import { authClient } from '@/api/better-auth/client';
 
-import { sessionQueryOptions } from '../api/queries';
-
 export function useSignOut() {
   const router = useRouter();
   const qc = useQueryClient();
@@ -13,17 +11,16 @@ export function useSignOut() {
   return async function signOut() {
     const { error } = await authClient.signOut();
 
-    // Even if the network fails, you usually still want to clear local auth state
-    // so the UI doesn’t keep thinking you are logged in.
-    qc.removeQueries({ queryKey: sessionQueryOptions.queryKey });
-
-    // Re-run beforeLoad/loader guards so protected routes kick you out.
-    await router.invalidate();
-
     if (error) {
       toast.error(error.message);
       return null;
     }
+
+    // Clear all cached queries so no stale data leaks across sessions.
+    qc.clear();
+
+    // Re-run beforeLoad/loader guards so protected routes kick you out.
+    await router.invalidate();
 
     await router.navigate({ to: '/sign-in' });
   };

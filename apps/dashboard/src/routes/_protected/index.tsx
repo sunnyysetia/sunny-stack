@@ -1,7 +1,4 @@
-import { Button } from '@repo/ui/components/button';
 import { createFileRoute } from '@tanstack/react-router';
-
-import { useSignOut } from '@/features/auth/hooks/use-sign-out';
 
 export const Route = createFileRoute('/_protected/')({
   component: RouteComponent,
@@ -9,20 +6,12 @@ export const Route = createFileRoute('/_protected/')({
 
 function RouteComponent() {
   const { session } = Route.useRouteContext(); // Available because of layout route
-  const signOut = useSignOut();
   return (
-    <div>
-      userId: {session.user.id}
-      <br />
-      sessionId: {session.session.id}
-      <br />
-      <Button
-        onClick={async () => {
-          await signOut();
-        }}
-      >
-        Sign Out
-      </Button>
+    <div className="flex flex-col gap-1.5">
+      <h1 className="text-2xl font-semibold text-zinc-900">Home</h1>
+      <p className="text-sm text-zinc-500">
+        Welcome back, {session.user.name || session.user.email}.
+      </p>
     </div>
   );
 }

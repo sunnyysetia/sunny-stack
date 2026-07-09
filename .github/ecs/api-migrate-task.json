@@ -1,0 +1,53 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "REPLACED_AT_DEPLOY_TIME",
+      "cpu": 0,
+      "portMappings": [],
+      "essential": true,
+      "command": ["node", "dist/scripts/migrate.js"],
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "8000"
+        },
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ],
+      "environmentFiles": [
+        {
+          "value": "arn:aws:s3:::REPLACE_ENV_BUCKET/api.env",
+          "type": "s3"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "stopTimeout": 30,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/REPLACE_API_MIGRATE_TASK_FAMILY",
+          "awslogs-region": "REPLACE_AWS_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "REPLACE_API_MIGRATE_TASK_FAMILY",
+  "taskRoleArn": "arn:aws:iam::REPLACE_ACCOUNT_ID:role/REPLACE_ECS_TASK_ROLE",
+  "executionRoleArn": "arn:aws:iam::REPLACE_ACCOUNT_ID:role/REPLACE_ECS_EXECUTION_ROLE",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024"
+}

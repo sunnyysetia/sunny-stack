@@ -1,29 +1,33 @@
 {
   "name": "sunny",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "pnpm --recursive run build",
     "dev": "pnpm --recursive --parallel run dev",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx}\"",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "format": "prettier --write --cache \"**/*.{ts,tsx,md,json,js,jsx}\"",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint/",
+    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/",
     "typecheck": "pnpm --recursive run typecheck",
     "fin": "pnpm format && pnpm lint:fix && pnpm typecheck",
-    "db:push": "pnpm --filter @repo/api run db:push"
+    "db:generate": "pnpm --filter @repo/api run db:generate",
+    "db:migrate": "pnpm --filter @repo/api run db:migrate"
   },
   "packageManager": "pnpm@10.27.0",
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@tanstack/eslint-config": "^0.3.4",
-    "@tanstack/eslint-plugin-router": "^1.141.0",
-    "eslint": "^9.39.2",
+    "@eslint/js": "^9.39.4",
+    "@tanstack/eslint-config": "^0.4.0",
+    "@tanstack/eslint-plugin-router": "^1.162.0",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unicorn": "^62.0.0",
-    "globals": "^16.5.0",
-    "prettier": "^3.7.4",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0"
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.4",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0"
   }
 }

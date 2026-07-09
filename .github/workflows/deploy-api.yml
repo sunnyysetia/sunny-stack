@@ -1,0 +1,239 @@
+name: Deploy API to ECS
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TEMPLATE — this workflow encodes the *shape* of a production ECS-Fargate
+# deploy (schema-drift gate → build/push image → migrate before rollout →
+# deploy → verify image). Every AWS-specific value below is a `REPLACE_*`
+# placeholder. Before enabling this workflow you must:
+#   1. Provision the AWS resources (ECR repo, ECS cluster + service, IAM
+#      roles, CloudWatch log groups, S3 env bucket) — see .github/ecs/README.md.
+#   2. Fill in the `env:` block and the two files under .github/ecs/.
+#   3. Add repo secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#      (or switch to OIDC role assumption).
+# Until then it is inert (it only runs on push to main touching apps/api).
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'packages/**'
+      - '.github/workflows/deploy-api.yml'
+
+# Only one API deploy at a time. An ECS service runs a single deployment, so
+# rapid pushes (e.g. merging a stack of PRs) otherwise start overlapping deploys
+# that supersede each other — the superseded runs then fail with "deployment not
+# found after stabilization". Cancel the in-flight run so the latest commit wins
+# cleanly instead of emitting spurious failures. Safe to cancel: migrations take
+# a Postgres advisory lock (so a re-run serialises) and ECS owns the rollout.
+concurrency:
+  group: deploy-api-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: REPLACE_AWS_REGION # e.g. ap-southeast-2
+  ECR_REPOSITORY: REPLACE_ECR_REPOSITORY # e.g. sunny/api
+  ECS_CLUSTER: REPLACE_ECS_CLUSTER # e.g. sunny-cluster
+  ECS_SERVICE: REPLACE_ECS_SERVICE # e.g. sunny-api-service
+  TASK_DEFINITION_FAMILY: REPLACE_API_TASK_FAMILY # e.g. sunny-api-task
+  CONTAINER_NAME: api
+  # One-off Fargate task that runs `db:migrate:prod`.
+  # The workflow registers a fresh revision with the image that was just built,
+  # then runs that exact task-definition ARN.
+  MIGRATE_TASK_DEFINITION_FAMILY: REPLACE_API_MIGRATE_TASK_FAMILY # e.g. sunny-api-migrate-task
+
+jobs:
+  # Gate the deploy on prod schema reproducibility. The case that motivated
+  # this: a column was added to the Drizzle schema but its migration never
+  # reached prod (a migration squash desynced prod's applied-migration state),
+  # so every insert touching that table failed in production while passing
+  # locally and in CI (fresh DBs build from the migration baseline). This gate
+  # makes "schema changed but no migration generated/committed" a hard failure
+  # BEFORE the prod migrate runs. `drizzle-kit generate` is offline — it diffs
+  # the schema against the committed migration snapshots and never connects —
+  # so a placeholder URL satisfies the config's required-var guard.
+  schema-drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The Drizzle schema imports `@repo/schemas` (shared enums/vocab), so the
+      # workspace package must be built for drizzle-kit to resolve it.
+      - name: Build shared schemas
+        run: pnpm --filter @repo/schemas build
+
+      - name: Assert schema and migrations are in sync
+        working-directory: apps/api
+        run: |
+          set -euo pipefail
+          echo "DIRECT_DATABASE_URL=postgres://placeholder:placeholder@localhost:5432/placeholder" > .env.drift-check
+          DRIZZLE_ENV_FILE=.env.drift-check pnpm exec drizzle-kit generate
+          rm -f .env.drift-check
+          if [ -n "$(git status --porcelain src/core/database/migrations)" ]; then
+            echo "::error::Drizzle schema has changes with no committed migration. Run 'pnpm db:generate' and commit the result — schema, migration SQL, and meta/ must ship together. (This is the exact failure mode that drops prod schema out of sync.)"
+            git --no-pager diff -- src/core/database/migrations
+            exit 1
+          fi
+          echo "Schema and committed migrations are in sync."
+
+  deploy:
+    needs: schema-drift-check
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build, tag, and push image to ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -f apps/api/Dockerfile \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --push .
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Render migration task definition
+        id: migrate-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: .github/ecs/api-migrate-task.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      # Run DB migrations BEFORE rolling out the service so new code never
+      # boots against an unmigrated schema. Uses the freshly-built image as
+      # a one-off Fargate task. If migrations fail, the service rollout is
+      # skipped entirely (subsequent steps don't run on failure).
+      - name: Run database migrations
+        run: |
+          set -euo pipefail
+
+          # Pull network config from the existing service so we don't have to
+          # hard-code subnet / security-group IDs in the workflow.
+          NETWORK_CONFIG=$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE" \
+            --query 'services[0].networkConfiguration' \
+            --output json)
+
+          MIGRATE_TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "file://${{ steps.migrate-task-def.outputs.task-definition }}" \
+            --query 'taskDefinition.taskDefinitionArn' --output text)
+
+          echo "Starting migration task..."
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "$ECS_CLUSTER" \
+            --task-definition "$MIGRATE_TASK_DEFINITION_ARN" \
+            --launch-type FARGATE \
+            --network-configuration "$NETWORK_CONFIG" \
+            --started-by "gha-${GITHUB_RUN_ID}" \
+            --query 'tasks[0].taskArn' --output text)
+
+          if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
+            echo "ERROR: Failed to start migration task"
+            exit 1
+          fi
+
+          echo "Migration task: $TASK_ARN"
+          echo "Waiting for task to stop..."
+          aws ecs wait tasks-stopped --cluster "$ECS_CLUSTER" --tasks "$TASK_ARN"
+
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster "$ECS_CLUSTER" --tasks "$TASK_ARN" \
+            --query "tasks[0].containers[?name=='$CONTAINER_NAME'].exitCode | [0]" \
+            --output text)
+          REASON=$(aws ecs describe-tasks \
+            --cluster "$ECS_CLUSTER" --tasks "$TASK_ARN" \
+            --query 'tasks[0].stoppedReason' --output text)
+
+          echo "Exit code: $EXIT_CODE"
+          echo "Stopped reason: $REASON"
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "ERROR: Migrations failed. Check the migration task logs in CloudWatch."
+            exit 1
+          fi
+
+          echo "Migrations applied successfully."
+
+      - name: Render service task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: .github/ecs/api-task.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      - name: Verify deployed image matches expected image
+        env:
+          EXPECTED_IMAGE: ${{ steps.build-image.outputs.image }}
+        run: |
+          echo "Checking that the running task uses the expected image..."
+
+          TASK_ARNS=$(aws ecs list-tasks \
+            --cluster $ECS_CLUSTER \
+            --service-name $ECS_SERVICE \
+            --desired-status RUNNING \
+            --query 'taskArns[]' --output text)
+
+          if [ -z "$TASK_ARNS" ]; then
+            echo "ERROR: No running tasks found for service $ECS_SERVICE"
+            exit 1
+          fi
+
+          RUNNING_IMAGE=$(aws ecs describe-tasks \
+            --cluster $ECS_CLUSTER \
+            --tasks $TASK_ARNS \
+            --query "tasks[0].containers[?name=='$CONTAINER_NAME'].image" \
+            --output text)
+
+          echo "Expected: $EXPECTED_IMAGE"
+          echo "Running:  $RUNNING_IMAGE"
+
+          if [ "$RUNNING_IMAGE" != "$EXPECTED_IMAGE" ]; then
+            echo "ERROR: Deployed image does not match. The new task likely failed health checks and ECS rolled back."
+            exit 1
+          fi
+
+          echo "Deployment verified successfully."

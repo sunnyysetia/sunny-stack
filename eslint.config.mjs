@@ -53,8 +53,9 @@ function onlyForTs(config) {
   return { ...config, files: TS_FILES };
 }
 
-export default defineConfig([
-  // 1) Global ignores (repo-wide)
+// ─── Shared — applies across every package ───────────────────────────
+const sharedConfig = [
+  // Global ignores (repo-wide).
   {
     ignores: [
       '**/node_modules/**',
@@ -65,19 +66,31 @@ export default defineConfig([
       '**/.next/**',
       '**/coverage/**',
       '**/.venv/**',
+      // Ambient declaration files carry no logic to lint, and type-aware
+      // linting can't associate a bare `.d.ts` with the project service.
+      '**/*.d.ts',
+      // Claude Code worktrees are gitignored scratch copies of the repo; they
+      // must not be linted because they duplicate every source file.
+      '.claude/worktrees/**',
+
+      // Local research / scratch (gitignored)
+      '.research/**',
+
+      // Archived code kept for reference; will be deleted later.
+      '.archive/**',
 
       // Generated route tree is allowed
       'apps/dashboard/src/**/routeTree.gen.ts',
     ],
   },
 
-  // 2) Base JS recommended (applies to JS files, including eslint.config.mjs)
+  // Base JS recommended (applies to JS files, including eslint.config.mjs).
   eslint.configs.recommended,
 
-  // 3) TypeScript recommended (type-aware) but ONLY for TS/TSX files
+  // TypeScript recommended (type-aware) but ONLY for TS/TSX files.
   ...tseslint.configs.recommendedTypeChecked.map(onlyForTs),
 
-  // 4) Enable Project Service ONLY for TS/TSX files
+  // Enable Project Service ONLY for TS/TSX files.
   {
     files: TS_FILES,
     languageOptions: {
@@ -88,7 +101,7 @@ export default defineConfig([
     },
   },
 
-  // 5) Import sorting (autofixable)
+  // Import sorting (autofixable).
   {
     plugins: { 'simple-import-sort': simpleImportSort },
     rules: {
@@ -109,7 +122,7 @@ export default defineConfig([
     },
   },
 
-  // 6) Enforce kebab-case filenames
+  // Enforce kebab-case filenames.
   {
     files: [
       'apps/api/{src,scripts,test}/**/*.{ts,tsx,js,jsx}',
@@ -123,26 +136,105 @@ export default defineConfig([
         {
           case: 'kebabCase',
           multipleFileExtensions: true,
+          ignore: [/^\$.*$/u], // TanStack Router param files ($caseId.tsx, etc.)
         },
       ],
     },
   },
+];
 
-  // 7) API specific (Node + Jest + your rule tweaks)
+// ─── apps/api ─────────────────────────────────────────────────────────
+const apiConfig = [
+  // Node globals + rule tweaks.
   {
     files: ['apps/api/**/*.{ts,js,mjs,cjs}'],
     languageOptions: {
-      globals: { ...globals.node, ...globals.jest },
+      globals: { ...globals.node },
       sourceType: 'commonjs',
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      // Honour the `_`-prefix convention for intentionally-unused names.
+      // Lets `const { content: _content, ...rest } = obj` drop a field
+      // without a lint hack. Mirrors what every popular TS preset does.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
 
-  // 8) Dashboard specific (TanStack config + Router recommended)
+  // API scripts: operator scripts that parse arbitrary third-party API
+  // JSON. Turning off the unsafe-* rules here keeps the scripts ergonomic
+  // without weakening the production codebase.
+  {
+    files: ['apps/api/scripts/**/*.{ts,js,mjs,cjs}'],
+    rules: {
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+    },
+  },
+
+  // Generic engineering guardrails for the Drizzle + NestJS backend.
+  {
+    files: ['apps/api/src/**/*.{ts,tsx,mts,cts}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        // Ban hand-annotated `sql<Date>` aggregates. Drizzle's node-postgres
+        // driver returns timestamp/timestamptz/date columns as raw STRINGS and
+        // decodes them to `Date` only through a column codec. A bare
+        // ``sql<Date>`max(...)` `` has no codec, so the `<Date>` is a runtime
+        // lie: the value is a string and `.getTime()` throws. Use Drizzle's
+        // max()/min() helpers (which attach the column's codec), or
+        // `.mapWith(column)` for expressions with no helper.
+        {
+          selector:
+            'TaggedTemplateExpression[tag.name="sql"] TSTypeParameterInstantiation TSTypeReference[typeName.name="Date"]',
+          message:
+            'Do not annotate `sql<Date>` — node-postgres returns timestamps as strings, ' +
+            'so without a column codec this is a string at runtime, not a Date. ' +
+            'Use Drizzle’s max()/min() helpers, or `.mapWith(column)` for date_trunc/subqueries.',
+        },
+        // Ban ModuleRef / forwardRef. Both are bandaids over a NestJS module
+        // cycle: they hide a real dependency from the constructor and defer the
+        // miswire from boot to a runtime call. Cut the cycle structurally with a
+        // leaf module instead (a dependency-free data layer both sides can
+        // import). `DiscoveryService` / `Reflector` for bootstrap scanning stay
+        // allowed — only ModuleRef/forwardRef are banned.
+        {
+          selector: 'ImportSpecifier[imported.name="ModuleRef"]',
+          message:
+            'Do not use ModuleRef to resolve a provider at call time — it is a service-locator ' +
+            'escape hatch for a module cycle. Break the cycle with a leaf module, ' +
+            'then constructor-inject the dependency.',
+        },
+        {
+          selector: 'ImportSpecifier[imported.name="forwardRef"]',
+          message:
+            'Do not use forwardRef — it keeps the cyclic module graph and only defers reference ' +
+            'resolution. Break the cycle structurally with a leaf module, ' +
+            'then constructor-inject the dependency.',
+        },
+      ],
+    },
+  },
+];
+
+// ─── apps/dashboard ───────────────────────────────────────────────────
+const dashboardConfig = [
+  // TanStack base config + Router recommended.
   ...tanstackConfig.map(stripParserOptionsProject).map((c) => ({
     ...c,
     files: ['apps/dashboard/**/*.{ts,tsx,js,jsx}'],
@@ -153,7 +245,7 @@ export default defineConfig([
     files: ['apps/dashboard/**/*.{ts,tsx}'],
   })),
 
-  // 8.1) Dashboard: override TanStack's array-type rule and allow Promise-returning handlers
+  // Override TanStack's array-type rule and allow Promise-returning handlers.
   {
     files: ['apps/dashboard/**/*.{ts,tsx}'],
     rules: {
@@ -169,8 +261,10 @@ export default defineConfig([
     },
   },
 
-  // 9) Disable other import sorting rules globally to avoid circular fixes.
-  // We use simple-import-sort as the single source of truth for import ordering.
+  // Disable other import-sorting rules so simple-import-sort stays the
+  // single source of truth (avoids circular fixes). Lives in this group
+  // because it must come AFTER the TanStack config — that's what turns
+  // `import/order` on.
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     rules: {
@@ -179,7 +273,7 @@ export default defineConfig([
     },
   },
 
-  // 10) Router override (optional)
+  // Router: allow throwing TanStack's `Redirect`.
   {
     files: ['apps/dashboard/**/*.{ts,tsx}'],
     rules: {
@@ -191,7 +285,14 @@ export default defineConfig([
       ],
     },
   },
+];
 
-  // 11) Prettier compatibility (keep last)
+// Flat config is order-sensitive — later entries override earlier ones for
+// a matching file. Keep the package groups in this order, and Prettier
+// last so it wins any formatting-rule conflict.
+export default defineConfig([
+  ...sharedConfig,
+  ...apiConfig,
+  ...dashboardConfig,
   eslintConfigPrettier,
 ]);
