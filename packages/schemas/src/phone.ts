@@ -99,7 +99,7 @@ export const phoneSchema = z
   .transform((v, ctx) => {
     const e164 = toE164(v);
     if (e164 === null) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Enter a valid phone number' });
+      ctx.addIssue({ code: 'custom', message: 'Enter a valid phone number' });
       return z.NEVER;
     }
     return e164;
@@ -116,7 +116,7 @@ export const phoneSchema = z
 export const optionalPhoneSchema = z
   .string()
   .trim()
-  .refine((v) => v === '' || isValidPhone(v), { message: 'Enter a valid phone number' })
+  .refine((v) => v === '' || isValidPhone(v), { error: 'Enter a valid phone number' })
   .optional();
 
 /**
@@ -129,5 +129,5 @@ export const optionalPhoneSchema = z
 export const nullablePhoneSchema = z
   .union([z.string(), z.null(), z.undefined()])
   .transform((v) => (v == null ? '' : v.trim()))
-  .refine((v) => v === '' || isValidPhone(v), { message: 'Enter a valid phone number' })
+  .refine((v) => v === '' || isValidPhone(v), { error: 'Enter a valid phone number' })
   .transform((v) => (v === '' ? null : toE164(v)));

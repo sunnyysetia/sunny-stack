@@ -63,9 +63,9 @@ const envSchema = z.object({
 
   // ── URLs ─────────────────────────────────────────────────────────
   // This API's own public origin (better-auth baseURL, absolute callback URLs).
-  SELF_BASE_URL: z.string().url().default('http://localhost:8000'),
+  SELF_BASE_URL: z.url().default('http://localhost:8000'),
   // The dashboard/frontend origin — CORS allow-list + invitation links.
-  DASHBOARD_URL: z.string().url().default('http://localhost:3000'),
+  DASHBOARD_URL: z.url().default('http://localhost:3000'),
 
   // ── Auth ─────────────────────────────────────────────────────────
   BETTER_AUTH_SECRET: z.string().min(1),
