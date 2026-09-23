@@ -37,7 +37,7 @@ export function getLogger(context: string): pino.Logger {
       const value = Reflect.get(logger, prop, logger) as unknown;
       if (typeof value === 'function') {
         const fn = value as (...a: unknown[]) => unknown;
-        return (...args: unknown[]): unknown => fn.apply(logger, args) as unknown;
+        return (...args: unknown[]): unknown => fn.apply(logger, args);
       }
       return value;
     },
