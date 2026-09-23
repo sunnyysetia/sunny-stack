@@ -1,6 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-import { env } from './env';
+import { env } from './env.js';
 
 // Origins allowed to make credentialed (cookie-bearing) requests. The
 // dashboard origin is env-driven so the same build points at localhost in

@@ -1,6 +1,4 @@
-import { describe, expect, it } from 'vitest';
-
-import { isDbError } from '../error';
+import { isDbError } from './error.js';
 
 // node-postgres surfaces the driver error under `.cause` (drizzle wraps it), so
 // isDbError reads `err.cause.code` / `err.cause.constraint`.

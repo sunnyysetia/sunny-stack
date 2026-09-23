@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { HealthController } from './health.controller';
+import { HealthController } from './health.controller.js';
 
 // Liveness + readiness probes. DB_CONNECTION is provided by the @Global
 // DatabaseModule, so no imports are needed here.

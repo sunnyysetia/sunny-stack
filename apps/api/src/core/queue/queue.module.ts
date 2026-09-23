@@ -2,10 +2,10 @@ import { Global, Inject, Injectable, Module, type OnApplicationShutdown } from '
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PgBoss } from 'pg-boss';
 
-import { env } from '@/config/env';
-import { getLogger } from '@/core/logging';
+import { env } from '@/config/env.js';
+import { getLogger } from '@/core/logging/index.js';
 
-import { ShutdownSignal } from './shutdown-signal';
+import { ShutdownSignal } from './shutdown-signal.js';
 
 // ─────────────────────────────────────────────────────────────────────
 // DESIGNING A QUEUE? READ THIS FIRST.

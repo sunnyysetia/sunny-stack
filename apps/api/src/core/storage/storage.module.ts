@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { ObjectStorageService } from './object-storage.service';
+import { ObjectStorageService } from './object-storage.service.js';
 
 // `ObjectStorageService` is the canonical S3 wrapper. Global so any module can
 // inject it without re-importing.

@@ -28,7 +28,7 @@ The API serves health at `/health`, tRPC at `/trpc`, and better-auth at `/auth`.
 | Script                          | What it does                                                |
 | ------------------------------- | ----------------------------------------------------------- |
 | `pnpm --filter @repo/api dev`   | Run the API in watch mode (`nest start --watch`).           |
-| `pnpm --filter @repo/api build` | Compile to `dist/` (`nest build` + `tsc-alias`).            |
+| `pnpm --filter @repo/api build` | Compile to `dist/` (`nest build`).                          |
 | `pnpm --filter @repo/api test`  | Run the Vitest suite.                                       |
 | `pnpm db:generate`              | Generate a Drizzle migration from schema changes.           |
 | `pnpm db:migrate`               | Apply pending migrations to the local database.             |

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { PlatformMailService } from './platform-mail.service';
+import { PlatformMailService } from './platform-mail.service.js';
 
 // Transactional mail over SES. Depends on nothing but env + the AWS SDK, so
 // it can be imported anywhere a send is needed (auth OTP, org invitations,

@@ -1,6 +1,6 @@
 import { type Queue, type QueueResult } from 'pg-boss';
 
-import { getLogger } from '@/core/logging';
+import { getLogger } from '@/core/logging/index.js';
 
 const logger = getLogger('reconcile-queue');
 

@@ -8,11 +8,11 @@ import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 import { stdSerializers } from 'pino';
 
-import { env } from './config/env';
-import { AuthGuard } from './core/auth/guards/auth.guard';
-import { CoreModule } from './core/core.module';
-import { HealthModule } from './core/health/health.module';
-import { TrpcModule } from './trpc/trpc.module';
+import { env } from './config/env.js';
+import { AuthGuard } from './core/auth/guards/auth.guard.js';
+import { CoreModule } from './core/core.module.js';
+import { HealthModule } from './core/health/health.module.js';
+import { TrpcModule } from './trpc/trpc.module.js';
 
 // AppModule keeps only infra: config, logging, core (DB / auth / queue /
 // storage / mail wiring), health, and TrpcModule. Every domain module is

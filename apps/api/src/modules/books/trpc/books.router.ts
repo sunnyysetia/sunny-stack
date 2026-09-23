@@ -1,8 +1,8 @@
-import { bookTable, isDbError } from '@/core/database';
-import { throwAppError } from '@/trpc/error';
-import { protectedProcedure, publicProcedure, router } from '@/trpc/trpc';
+import { bookTable, isDbError } from '@/core/database/index.js';
+import { throwAppError } from '@/trpc/error.js';
+import { protectedProcedure, publicProcedure, router } from '@/trpc/trpc.js';
 
-import { createBookSchema } from '../books.schemas';
+import { createBookSchema } from '../books.schemas.js';
 
 export const booksRouter = router({
   // anyone can call this

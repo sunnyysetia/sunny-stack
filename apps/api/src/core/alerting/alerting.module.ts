@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { OpsAlertService } from './ops-alert.service';
+import { OpsAlertService } from './ops-alert.service.js';
 
 // Operational alerting — the ops pager for terminal failures. Global so
 // dead-letter handlers and any service can inject it without extra imports.

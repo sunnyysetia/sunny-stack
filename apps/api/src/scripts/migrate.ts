@@ -9,7 +9,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 
-import * as schema from '../src/core/database/schema';
+import * as schema from '../core/database/schema/index.js';
 
 async function main(): Promise<void> {
   // Migrations run DDL inside transactions and take a migration advisory
@@ -24,7 +24,7 @@ async function main(): Promise<void> {
   // From dist/scripts/migrate.js, resolve back to the source SQL folder.
   // pnpm's `--prod deploy --legacy` copies the package directory verbatim
   // (minus node_modules), so the src tree ships alongside dist in the image.
-  const migrationsFolder = resolve(__dirname, '../../src/core/database/migrations');
+  const migrationsFolder = resolve(import.meta.dirname, '../../src/core/database/migrations');
   if (!existsSync(migrationsFolder)) {
     throw new Error(
       `Migrations folder not found at ${migrationsFolder}. ` +

@@ -2,11 +2,11 @@ import { timingSafeEqual } from 'node:crypto';
 import type { ExecutionContext } from '@nestjs/common';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
-import { env } from '@/config/env';
+import { env } from '@/config/env.js';
 
-import type { AuthGuardRequest } from '../auth.guard';
+import type { AuthGuardRequest } from '../auth.guard.js';
 
-import type { AuthStrategy } from './auth-strategy.interface';
+import type { AuthStrategy } from './auth-strategy.interface.js';
 
 // Constant-time compare so a caller can't time-probe the expected key. Bails
 // on length mismatch first (timingSafeEqual throws on unequal-length buffers).

@@ -2,7 +2,7 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Pool } from 'pg';
 
-import { PG_POOL } from './database.constants';
+import { PG_POOL } from './database.constants.js';
 
 // Drains the pg pool on graceful shutdown so in-flight queries finish and
 // sockets close cleanly instead of being severed by process exit. Requires

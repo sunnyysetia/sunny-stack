@@ -1,20 +1,20 @@
 import type { Job, JobWithMetadata, Queue, WorkOptions } from 'pg-boss';
 
-import { getLogger } from '@/core/logging';
+import { getLogger } from '@/core/logging/index.js';
 
-import type { OpsAlertInput, OpsAlertService } from '../alerting/ops-alert.service';
+import type { OpsAlertInput, OpsAlertService } from '../alerting/ops-alert.service.js';
 
 import {
   type QueueFailureClient,
   runCronTick,
   runDeadLetterBatch,
   runJobBatch,
-} from './job-runner';
+} from './job-runner.js';
 import {
   type QueueReconciler,
   reconcileQueue,
   reconcileQueueWithDeadLetter,
-} from './reconcile-queue';
+} from './reconcile-queue.js';
 
 // The two entry points every queue goes through. They encode the
 // queue.module.ts doctrine (points 3, 6 and 7) so a new queue can't

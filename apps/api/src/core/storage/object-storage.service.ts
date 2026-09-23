@@ -11,9 +11,9 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import { env } from '@/config/env';
+import { env } from '@/config/env.js';
 
-import { safeFilename } from './safe-filename';
+import { safeFilename } from './safe-filename.js';
 
 // ObjectStorageService — a thin, generic wrapper over a single S3 bucket.
 //
