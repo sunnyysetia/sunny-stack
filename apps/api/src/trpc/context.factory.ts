@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 
-import { AuthSessionService } from '@/core/auth/auth-session.service';
-import type { AppAuth, AppAuthSession, AppAuthUser } from '@/core/auth/better-auth';
-import { BETTER_AUTH } from '@/core/auth/better-auth';
-import { type Database, DB_CONNECTION } from '@/core/database';
+import { AuthSessionService } from '@/core/auth/auth-session.service.js';
+import type { AppAuth, AppAuthSession, AppAuthUser } from '@/core/auth/better-auth/index.js';
+import { BETTER_AUTH } from '@/core/auth/better-auth/index.js';
+import { type Database, DB_CONNECTION } from '@/core/database/index.js';
 
 // The tRPC request context. One better-auth `getSession` per request (the
 // session cookie is cookie-cached, so this is cheap), plus `db` and the auth
@@ -46,7 +46,7 @@ export class TrpcContextFactory {
   ) {}
 
   async create(req: Request): Promise<TrpcContext> {
-    const authHeaders = await this.authSession.toWebHeaders(req);
+    const authHeaders = this.authSession.toWebHeaders(req);
     const result = await this.authSession.getSession(authHeaders);
 
     return {

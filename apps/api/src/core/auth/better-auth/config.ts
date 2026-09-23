@@ -1,15 +1,15 @@
 import type { BetterAuthOptions } from 'better-auth';
-import type { admin, emailOTP, organization } from 'better-auth/plugins';
+import { admin, emailOTP, organization } from 'better-auth/plugins';
 
-import { getTrustedOrigins } from '@/config/cors.config';
-import { getLogger } from '@/core/logging';
+import { getTrustedOrigins } from '@/config/cors.config.js';
+import { getLogger } from '@/core/logging/index.js';
 import {
   buildSignInCodeEmail,
   EMAIL_FINEPRINT_STYLE,
   emailButton,
   escapeEmailHtml,
   renderPlatformEmail,
-} from '@/core/platform-mail/email-layout';
+} from '@/core/platform-mail/email-layout.js';
 
 const logger = getLogger('BetterAuth');
 
@@ -44,28 +44,10 @@ type BetterAuthRuntimeDeps = {
 };
 export type BetterAuthDeps = BetterAuthCliDeps | BetterAuthRuntimeDeps;
 
-// Better Auth plugins are passed in rather than imported directly so that:
-// - The app runtime (CJS) can use dynamic `await import()` to avoid bundling
-//   issues (see createBetterAuthConfig below).
-// - The CLI can use static `import` so the export is a concrete value (not a
-//   Promise), which the Better Auth CLI requires to read the config.
-// buildBetterAuthConfig stays the single source of truth for auth config.
-export interface BetterAuthPlugins {
-  admin: typeof admin;
-  emailOTP: typeof emailOTP;
-  organization: typeof organization;
-}
-
-export const buildBetterAuthConfig = ({
-  config,
-  deps,
-  plugins,
-}: {
-  config: BetterAuthConfig;
-  deps: BetterAuthDeps;
-  plugins: BetterAuthPlugins;
-}) => {
-  const { admin, emailOTP, organization } = plugins;
+// Single source of truth for auth configuration, shared by the app runtime
+// (auth.module.ts) and the better-auth CLI (cli.ts). Its return type is what
+// `types.ts` derives the typed `AppAuth` from.
+export const createBetterAuthConfig = (config: BetterAuthConfig, deps: BetterAuthDeps) => {
   const isHttps = config.baseURL?.startsWith('https://') ?? false;
 
   return {
@@ -197,12 +179,4 @@ export const buildBetterAuthConfig = ({
       }),
     ],
   } satisfies Omit<BetterAuthOptions, 'database'>;
-};
-
-// Runtime factory — dynamic-imports the plugins (CJS-safe) and returns the
-// config object. `createBetterAuthConfig`'s awaited return type is what
-// `types.ts` derives the typed `AppAuth` from.
-export const createBetterAuthConfig = async (config: BetterAuthConfig, deps: BetterAuthDeps) => {
-  const { admin, emailOTP, organization } = await import('better-auth/plugins');
-  return buildBetterAuthConfig({ config, deps, plugins: { admin, emailOTP, organization } });
 };

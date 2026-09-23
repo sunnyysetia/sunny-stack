@@ -3,8 +3,8 @@ import { sql } from 'drizzle-orm';
 import type { Response } from 'express';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import { PublicRoute } from '@/core/auth/decorators';
-import { type Database, DB_CONNECTION } from '@/core/database';
+import { PublicRoute } from '@/core/auth/decorators/index.js';
+import { type Database, DB_CONNECTION } from '@/core/database/index.js';
 
 // Two distinct probes — keep them distinct, they answer different questions:
 //

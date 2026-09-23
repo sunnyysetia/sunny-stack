@@ -1,19 +1,16 @@
 // This file exists solely for use by the Better Auth CLI (schema generation
-// via `pnpm auth:generate`). The CLI requires `auth` to be a concrete value,
-// not a Promise — so plugins are imported STATICALLY here (unlike the app
-// runtime, which dynamic-imports them for CJS compatibility) and passed into
-// buildBetterAuthConfig, the single source of truth for auth configuration.
-// The db client declared here is not used at runtime.
+// via `pnpm auth:generate`). The CLI loads it outside the Nest DI graph, so it
+// builds its own throwaway db client (never used at runtime) and reuses
+// createBetterAuthConfig, the single source of truth for auth configuration.
 
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { admin, emailOTP, organization } from 'better-auth/plugins';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
-import * as schema from '../../database/schema';
+import * as schema from '../../database/schema/index.js';
 
-import { buildBetterAuthConfig } from './config';
-import { BETTER_AUTH_BASE_PATH } from './constants';
+import { createBetterAuthConfig } from './config.js';
+import { BETTER_AUTH_BASE_PATH } from './constants.js';
 
 // Reads `process.env` raw (not the typed `@/config/env`) deliberately: this is
 // a standalone entry point loaded by the `@better-auth/cli` outside the Nest DI
@@ -27,13 +24,12 @@ const db = drizzle({
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: 'pg' }),
-  ...buildBetterAuthConfig({
-    config: {
+  ...createBetterAuthConfig(
+    {
       secret: process.env.BETTER_AUTH_SECRET!,
       baseURL: process.env.SELF_BASE_URL!,
       basePath: BETTER_AUTH_BASE_PATH,
     },
-    deps: { isCliMode: true },
-    plugins: { admin, emailOTP, organization },
-  }),
+    { isCliMode: true },
+  ),
 });

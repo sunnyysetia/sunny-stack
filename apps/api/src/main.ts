@@ -5,12 +5,12 @@ import * as trpcExpress from '@trpc/server/adapters/express';
 import rateLimit from 'express-rate-limit';
 import { Logger as PinoLogger } from 'nestjs-pino';
 
-import { createCorsConfig } from './config/cors.config';
-import { env } from './config/env';
-import { getLogger } from './core/logging';
-import { appRouter } from './trpc/app.router';
-import { TrpcContextFactory } from './trpc/context.factory';
-import { AppModule } from './app.module';
+import { createCorsConfig } from './config/cors.config.js';
+import { env } from './config/env.js';
+import { getLogger } from './core/logging/index.js';
+import { appRouter } from './trpc/app.router.js';
+import { TrpcContextFactory } from './trpc/context.factory.js';
+import { AppModule } from './app.module.js';
 
 const logger = new Logger('Bootstrap');
 

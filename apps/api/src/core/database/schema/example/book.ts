@@ -1,8 +1,8 @@
 import { pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
-import { primaryUUID } from '../../utils';
+import { primaryUUID } from '../../utils.js';
 
-import { exampleStatusEnum } from './enums';
+import { exampleStatusEnum } from './enums.js';
 
 // Example domain table backing the `books` reference module. Delete this
 // (and the `example/` folder) when you add your own domains — it exists to

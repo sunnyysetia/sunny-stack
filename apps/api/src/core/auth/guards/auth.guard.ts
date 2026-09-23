@@ -8,18 +8,18 @@ import {
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 
-import type { AppAuthSession, AppAuthUser } from '../better-auth';
+import type { AppAuthSession, AppAuthUser } from '../better-auth/index.js';
 import {
   IS_PUBLIC_ROUTE_KEY,
   IS_SERVICE_ROUTE_KEY,
   IS_USER_ROUTE_KEY,
-} from '../decorators/route.decorator';
+} from '../decorators/route.decorator.js';
 
 import {
   type AuthStrategy,
   INTERNAL_AUTH_STRATEGY,
   USER_AUTH_STRATEGY,
-} from './strategies/auth-strategy.interface';
+} from './strategies/auth-strategy.interface.js';
 
 export interface AuthGuardRequest extends Request {
   headers: Record<string, string | string[] | undefined>;

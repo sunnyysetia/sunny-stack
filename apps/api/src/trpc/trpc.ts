@@ -2,10 +2,10 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { z, ZodError } from 'zod';
 
-import { getLogger } from '@/core/logging';
+import { getLogger } from '@/core/logging/index.js';
 
-import type { TrpcContext } from './context.factory';
-import { AppError } from './error';
+import type { TrpcContext } from './context.factory.js';
+import { AppError } from './error.js';
 
 const trpcLogger = getLogger('Trpc');
 

@@ -1,10 +1,10 @@
 import { Body, ConflictException, Controller, Get, Post, SerializeOptions } from '@nestjs/common';
 
-import { UserRoute } from '@/core/auth/decorators';
-import { isDbError } from '@/core/database';
+import { UserRoute } from '@/core/auth/decorators/index.js';
+import { isDbError } from '@/core/database/index.js';
 
-import { bookSchema, type CreateBookInput, createBookSchema } from './books.schemas';
-import { BooksService } from './books.service';
+import { bookSchema, type CreateBookInput, createBookSchema } from './books.schemas.js';
+import { BooksService } from './books.service.js';
 
 // Example REST controller. Marked @UserRoute so it requires a signed-in user
 // (the global AuthGuard denies any handler with no access-level decorator).

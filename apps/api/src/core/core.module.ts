@@ -1,11 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 
-import { AlertingModule } from './alerting/alerting.module';
-import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
-import { PlatformMailModule } from './platform-mail/platform-mail.module';
-import { QueueModule } from './queue/queue.module';
-import { StorageModule } from './storage/storage.module';
+import { AlertingModule } from './alerting/alerting.module.js';
+import { AuthModule } from './auth/auth.module.js';
+import { DatabaseModule } from './database/database.module.js';
+import { PlatformMailModule } from './platform-mail/platform-mail.module.js';
+import { QueueModule } from './queue/queue.module.js';
+import { StorageModule } from './storage/storage.module.js';
 
 // CoreModule bundles the generic infrastructure every app needs: DB, auth,
 // the pg-boss queue singleton, S3 storage, transactional mail, and ops

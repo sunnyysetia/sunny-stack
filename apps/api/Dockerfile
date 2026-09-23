@@ -41,4 +41,4 @@ COPY --from=build --chown=appuser:appuser /prod/api .
 USER appuser
 ENV NODE_ENV=production
 EXPOSE 8000
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "dist/main.js"]

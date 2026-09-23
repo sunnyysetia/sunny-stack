@@ -1,1 +1,1 @@
-export { PublicRoute, ServiceRoute, UserRoute } from './route.decorator';
+export { PublicRoute, ServiceRoute, UserRoute } from './route.decorator.js';

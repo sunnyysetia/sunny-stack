@@ -1,11 +1,12 @@
 import type { ExecutionContext } from '@nestjs/common';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { fromNodeHeaders } from 'better-auth/node';
 
-import { type AppAuth, BETTER_AUTH } from '@/core/auth/better-auth';
+import { type AppAuth, BETTER_AUTH } from '@/core/auth/better-auth/index.js';
 
-import type { AuthGuardRequest } from '../auth.guard';
+import type { AuthGuardRequest } from '../auth.guard.js';
 
-import type { AuthStrategy } from './auth-strategy.interface';
+import type { AuthStrategy } from './auth-strategy.interface.js';
 
 // User-session auth: resolves the better-auth session from the request
 // cookies/headers and attaches `session` + `user` to the request for
@@ -17,14 +18,9 @@ export class UserAuthStrategy implements AuthStrategy {
   async validate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthGuardRequest>();
 
-    // Build Web Headers from Express headers (the shape better-auth expects).
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(request.headers)) {
-      if (value == null) continue;
-      headers.append(key, Array.isArray(value) ? value.join(', ') : value);
-    }
-
-    const sessionResult = await this.betterAuth.api.getSession({ headers });
+    const sessionResult = await this.betterAuth.api.getSession({
+      headers: fromNodeHeaders(request.headers),
+    });
 
     if (!sessionResult?.session) {
       throw new UnauthorizedException('Authentication required');

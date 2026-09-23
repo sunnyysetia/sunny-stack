@@ -2,7 +2,7 @@ import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import { env } from '@/config/env';
+import { env } from '@/config/env.js';
 
 /**
  * Platform transactional mail — auth flows (sign-in codes), member

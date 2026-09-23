@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { type Database, DB_CONNECTION } from '@/core/database';
-import { bookTable } from '@/core/database/schema';
+import { type Database, DB_CONNECTION } from '@/core/database/index.js';
+import { bookTable } from '@/core/database/schema/index.js';
 
-import type { CreateBookInput } from './books.schemas';
+import type { CreateBookInput } from './books.schemas.js';
 
 @Injectable()
 export class BooksService {

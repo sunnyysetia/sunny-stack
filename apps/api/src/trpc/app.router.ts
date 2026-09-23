@@ -1,6 +1,6 @@
-import { booksRouter } from '@/modules/books/trpc/books.router';
+import { booksRouter } from '@/modules/books/trpc/books.router.js';
 
-import { router } from './trpc';
+import { router } from './trpc.js';
 
 export const appRouter = router({
   books: booksRouter,

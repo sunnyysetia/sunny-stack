@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { fromNodeHeaders } from 'better-auth/node';
 import type { Request } from 'express';
 
-import { type AppAuth, BETTER_AUTH } from './better-auth';
+import { type AppAuth, BETTER_AUTH } from './better-auth/index.js';
 
 // Thin wrapper around better-auth's server-side session API — the single place
 // that converts Express headers to Web `Headers` and calls `auth.api.getSession`,
@@ -17,10 +18,8 @@ export class AuthSessionService {
   constructor(@Inject(BETTER_AUTH) private readonly auth: AppAuth) {}
 
   // Express `IncomingHttpHeaders` -> Web `Headers`, the shape every `auth.api.*`
-  // method expects. `better-auth/node` is ESM-only and the runtime is CJS, so
-  // dynamic-import (Node caches the module, so this is one resolution).
-  async toWebHeaders(req: Request): Promise<Headers> {
-    const { fromNodeHeaders } = await import('better-auth/node');
+  // method expects.
+  toWebHeaders(req: Request): Headers {
     return fromNodeHeaders(req.headers);
   }
 

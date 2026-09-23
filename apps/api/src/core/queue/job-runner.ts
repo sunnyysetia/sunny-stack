@@ -1,8 +1,8 @@
 import type { CommandResponse, Job, JobWithMetadata } from 'pg-boss';
 
-import { getLogger } from '@/core/logging';
+import { getLogger } from '@/core/logging/index.js';
 
-import type { OpsAlertClient, OpsAlertInput } from '../alerting/ops-alert.service';
+import type { OpsAlertClient, OpsAlertInput } from '../alerting/ops-alert.service.js';
 
 // Uniform per-job error logging + per-job failure isolation for pg-boss
 // workers.
