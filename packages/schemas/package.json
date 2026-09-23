@@ -18,7 +18,7 @@
     "dev": "tsc --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "libphonenumber-js": "^1.13.8"
+    "libphonenumber-js": "^1.13.13"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

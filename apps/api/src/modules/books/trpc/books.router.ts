@@ -1,9 +1,8 @@
-import { exampleStatusSchema } from '@repo/schemas';
-import { z } from 'zod';
-
 import { bookTable, isDbError } from '@/core/database';
 import { throwAppError } from '@/trpc/error';
 import { protectedProcedure, publicProcedure, router } from '@/trpc/trpc';
+
+import { createBookSchema } from '../books.schemas';
 
 export const booksRouter = router({
   // anyone can call this
@@ -16,15 +15,8 @@ export const booksRouter = router({
     return ctx.db.select().from(bookTable);
   }),
   create: protectedProcedure
-    // `status` reuses the SAME `@repo/schemas` source that defines the pg enum,
-    // so the API's input validation and the DB constraint stay in lockstep.
-    .input(
-      z.object({
-        title: z.string().min(1),
-        publishedAt: z.coerce.date(),
-        status: exampleStatusSchema.optional(),
-      }),
-    )
+    // Same schema the REST controller's `@Body({ schema })` uses.
+    .input(createBookSchema)
     .mutation(async ({ ctx, input }) => {
       try {
         const [newBook] = await ctx.db

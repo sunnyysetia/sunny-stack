@@ -1,11 +1,13 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  StandardSchemaSerializerInterceptor,
+  StandardSchemaValidationPipe,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
-import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { stdSerializers } from 'pino';
 
-import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { env } from './config/env';
 import { AuthGuard } from './core/auth/guards/auth.guard';
 import { CoreModule } from './core/core.module';
@@ -61,9 +63,12 @@ import { TrpcModule } from './trpc/trpc.module';
     TrpcModule,
   ],
   providers: [
-    { provide: APP_PIPE, useClass: ZodValidationPipe },
-    { provide: APP_INTERCEPTOR, useClass: ZodSerializerInterceptor },
-    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    // Native Standard Schema support (Nest 12). Zod schemas are passed straight
+    // to param decorators — `@Body({ schema })`, `@Query({ schema })` — and
+    // validated here; responses are validated + stripped by the interceptor
+    // against `@SerializeOptions({ schema })`. See books.controller.ts.
+    { provide: APP_PIPE, useClass: StandardSchemaValidationPipe },
+    { provide: APP_INTERCEPTOR, useClass: StandardSchemaSerializerInterceptor },
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })
