@@ -18,6 +18,7 @@ export function SidebarToggleButton({
       aria-expanded={!collapsed}
       className={cn(
         'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-foreground/45 ring-ring transition-colors outline-none hover:bg-foreground/5 hover:text-foreground/80 focus-visible:ring-2',
+        collapsed ? 'cursor-e-resize' : 'cursor-w-resize',
         className,
       )}
     >

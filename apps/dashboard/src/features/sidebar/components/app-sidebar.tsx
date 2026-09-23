@@ -27,7 +27,7 @@ export function AppSidebar() {
              in/out — they never slide during the width animation. */}
           <div
             className={cn(
-              'pointer-events-none absolute left-4 flex items-center gap-1.5 transition-opacity duration-150',
+              'pointer-events-none absolute left-3 flex items-center gap-1.5 transition-opacity duration-150',
               collapsed && 'opacity-0',
             )}
           >
