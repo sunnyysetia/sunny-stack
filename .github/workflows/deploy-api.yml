@@ -10,7 +10,8 @@ name: Deploy API to ECS
 #   2. Fill in the `env:` block and the two files under .github/ecs/.
 #   3. Add repo secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 #      (or switch to OIDC role assumption).
-# Until then it is inert (it only runs on push to main touching apps/api).
+#   4. Set the repo variable ECS_DEPLOY_ENABLED=true.
+# Until step 4, only the schema-drift check runs; the deploy job is skipped.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -92,6 +93,8 @@ jobs:
 
   deploy:
     needs: schema-drift-check
+    # Off until the AWS placeholders above are filled in (see step 4).
+    if: vars.ECS_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment: production
     steps:
