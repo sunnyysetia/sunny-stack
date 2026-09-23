@@ -2,13 +2,17 @@ packages:
   - "apps/*"
   - "packages/*"
 
-# pnpm 10 requires build scripts to be explicitly approved. Only list deps this
-# workspace actually installs and trusts to run install-time build scripts.
+# pnpm requires every dependency with an install-time build script to be
+# listed here: `true` to let it run, `false` to deliberately skip it (pnpm 11+
+# fails the install on unlisted ones).
 allowBuilds:
   "@nestjs/core": true
   "@swc/core": true
   core-js: true
   esbuild: true
+  # Pulled in by the shadcn CLI; its postinstall only copies a mock service
+  # worker we don't use.
+  msw: false
   sharp: true
   unrs-resolver: true
 
