@@ -20,7 +20,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm@12.5.1
 
 # --- Build stage: install everything, compile, then bundle for prod ---
 FROM base AS build
